@@ -28,7 +28,7 @@ class App extends React.Component {
 
     //console.log(this.state.item); //cia dar nieko nera
   }
-
+ 
   changeButton = id => {
     let {favorites} = this.state;
     console.log(id);
