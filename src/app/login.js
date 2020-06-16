@@ -1,5 +1,5 @@
 //import React from 'react';
-import React, { useState } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { Link, useHistory, useLocation, withRouter } from "react-router-dom";
 //import logo from './logo.svg';
 //import './App.css';
@@ -10,51 +10,21 @@ import Image from './components/Image';
 import Button from './components/Button';
 import Item from './components/Item';
 import Private from './private.js';
+import { connect } from 'react-redux';
 
 
 
-class Login extends React.Component {
+const Login = ({ setToken, token }) => {
+  let [username, setUsername] = useState('');
+  let [password, setPassword] = useState('');
+  let history = useHistory();
 
-  constructor(props) {
-    super(props);
-    this.state = {
-        username: "",
-        password: "",
-  
-      };
-
-  }
-
-  //username: tester, password: netflix
-
-  getUsername = (event) => {
-    this.setState(
-        { 
-            username: event.target.value,
-        }
-    )
-    console.log(event.target.value);
-  }
-
-  getPassword = (event) => {
-    this.setState(
-        { 
-            password: event.target.value,
-        }
-    )
-    console.log(event.target.value);
-  }
-  //yra skirtumas ar tu cia apibrezi kaip metodus ( componentDidMount() ) ar kaip funkcijas. metodai atrodo turi savo atskira this,
-  //todel ju atveju juos kazkaip reiktu bindint i konstruktoriu. arrow funkcija tuo tarpu neturi savo this, ji paveldi, todel
-  //siuo atveju su ja paprasciau.
-  login = async (e) => {
+  const login = async (e) => { //useCallback nebutinas jeigu nenaudoji useEffect. useEffect jei nori kazkokia funkcija palaikyti atskirai
     e.preventDefault();
-    console.log(this.props);
     try {
-        console.log(this.state);
         let response = await fetch(`https://academy-video-api.herokuapp.com/auth/login`, {
             method: "POST",
-            body: JSON.stringify({ username: this.state.username, password: this.state.password }),
+            body: JSON.stringify({ username: username, password: password }),
             headers: {
                 'Content-Type': 'application/json',
             }
@@ -63,31 +33,49 @@ class Login extends React.Component {
         const json = await response.json();
         console.log(json.token);
         localStorage.setItem('token', json.token);
-        //tokena isirasyti i localstoraga, ir nukreipti i kita url
-        //this.props.history('/private');
-        this.props.history.replace('/private');
+        setToken(json.token);
+        history.replace('/private'); //replace naudoti tik su jautriais duomenimis, tipo login, forgot password ir pan.
+        //kitu naudoti push, nes issisaugo nauji keliai istorijoje ir gali back ir forward daryti.
     } catch (e) {
         console.log(e);
     }
   }
-  //<Button onclick={ () => this.login() } >Sign In</Button> galimai i login-wor po inputais
-  render () {
-   
 
-    return (
+  const getUsername = (event) => {
+      setUsername(event.target.value);
+      console.log(event.target.value);
+  } 
 
-      <div className="App">
+  const getPassword = (event) => {
+      setPassword(event.target.value);
+      console.log(event.target.value);
+  } 
+
+
+  // const Input = () => {
+  //   const inputRef = useRef();
+
+  //   useEffect(() => {
+  //     inputRef.current.event.target.value;
+  //   })
+
+  //   return <input ref={inputRef} type="text" />
+  // }
+
+  return (
+    <div className="App">
         <nav className="nav">
           <Image src={F} alt="logo" />
           <Button>Sign In</Button>
         </nav>
        
         <div className="login-wr">
-            <form onSubmit={ this.login } className="login">
+            <form onSubmit={ login } className="login">
                 Username<br/>
-                <input onChange={ this.getUsername } id="username" type="text" /><br/>
+                <input onChange={ getUsername } id="username" type="text" /><br/>
+                {/* <Input /> */}
                 Password<br/>
-                <input onChange={ this.getPassword } id="password" type="password" /><br/>
+                <input onChange={ getPassword } id="password" type="password" /><br/>
       
                 <input type="submit" />
             </form>
@@ -104,9 +92,26 @@ class Login extends React.Component {
           </div>
         </footer>
       </div>
-    )
-  };
+
+  )
+
+
 }
 
 //export default Login;
-export default withRouter(Login);
+
+function mapStateToProps({ token }) {
+  //console.log(favorites);
+  return {
+    token: token,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+      setToken: token => dispatch({ type: "SET_TOKEN", token })
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login);
+

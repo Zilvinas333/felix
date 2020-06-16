@@ -1,114 +1,68 @@
 //import React from 'react';
-import React, { useState } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Link, useHistory, useLocation, withRouter } from "react-router-dom";
+import { connect } from 'react-redux';
+
 //import logo from './logo.svg';
 //import './App.css';
 import './index.scss';
 import header from './images/header.png';
 import F from './images/F.png';
 import Image from './components/Image';
+import FavoriteButton from './components/FavoriteButton';
 import Button from './components/Button';
 import Item from './components/Item';
+import content from "../content";
+ 
 
+const App = ( { favorites, movies, setMovies } ) => {
+  //let [movies, setMovies] = useState([]);
+  //let [favorites, setFavorites] = useState([]);
 
+  const getMovies = useCallback( 
+    async () => {
 
-class App extends React.Component {
-
-  //let [item, displayItems] = useState(props.value);
-  //let [stateItems, displayItems] = React.useState(props.value);
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      items: [],
-      button: "Favorite",
-      favorites: [],
-
-    };
-
-    //console.log(this.state.item); //cia dar nieko nera
-  }
-
-  changeButton = id => {
-    let {favorites} = this.state;
-    console.log(id);
-    if (favorites.includes(id)) {
-      console.log(id);
-      this.setState({favorites: favorites.filter(el => el != id)}) //removina? nes filter grazina array be perduodamo id ir ideda ji i favorites dali objekte? tipo grazinti tuos el, kurie nelygus sitam id
-    } else {
-      this.setState({favorites: favorites.concat(id)}) //prideda i favoritus esama id, taigi, cia followina
+    const response = await fetch(`https://academy-video-api.herokuapp.com/content/free-items`)
+    if (response.ok) {
+      setMovies(await response.json())
     }
-    //console.log(event.target.value);
-    //console.log("veikia");
-    // if (this.state.button === "Favorite") {
-      
-    //   this.setState(
-    //     {
-    //       button: "Remove",
-    //     }, 
-    //   );
-    //   console.log(this.state.id);
-    //   // console.log(this.state.button);
-    //   event.target.style.backgroundColor = "green";
-    // } else if (this.state.button === "Remove") {
-    //   this.setState(
-    //     {
-    //       button: "Favorite",
-    //     }, 
-    //   );
-    //   console.log(this.state.id);
-    //   // console.log(this.state.button);
-    //   event.target.style.backgroundColor = "red";
-    // }
+
+    },
+    [setMovies]
+  );
+    
+  let history = useHistory();
+
+  const goTo = () => {
+      history.push('/login');
   }
+
+  useEffect(() => {
+    getMovies()
+  },[getMovies])
+
+
+  // const changeButton = id => {
+  //   console.log(id);
+  //   if (favorites.includes(id)) {
+  //     console.log(id, favorites);
+  //     setFavorites(favorites.filter(el => el != id));
+  //     //favorites = favorites.filter(el => el != id); //cia bandymas stata tiesiogiai mutuoti, todel neveikia, nes jis nemutabilus
+  //     //zodziu, esme tokia, kad viskas vyksta per funkcijas. nori kazka state pakeisti - kvieti funkcija, kuri ta pakeitima atlieka
+  //   } else {
+  //     setFavorites(favorites.concat(id));
+  //     //favorites = favorites.concat(id);
+  //   }
+  // } 
   
-async  componentDidMount () {
 
-      try {
-        let items = await fetch(`https://academy-video-api.herokuapp.com/content/free-items`)
-        items = await items.json();
-        console.log(items);
-        //console.log(await items.json());
-        //displayItems(items);
-        this.setState(
-          {
-            items: items,
-          }, 
-        );
-        //return items;
-      } catch (e) {
-        console.log(e);
-      }
-
-    //console.log(getItems);
-    //getItems();
-    //window.addEventListener('load', getItems);
-    
-    //console.log(this.state.item);
-  }
-
-  render () {
-    const { items } = this.state; 
-    //console.log(items[0]);
-    console.log(this.state.button);
-    // if (this.state.button === "Remove") {
-    //  // document.getElementById(items[1].id).backgroundColor = "green";
-    //   console.log(this.state.id);
-    // }
-    
-    //kodel neveikia
-    // const history = useHistory();
-    // const location = useLocation();
-
-    // console.log("Home", { history, location });
-    console.log("home", this.props);
-
+//console.log(favorites);
     return (
 
       <div className="App">
         <nav className="nav">
           <Image src={F} alt="logo" />
-          <Button>Sign In</Button>
+          <Button onclick={ () => goTo() }>Sign In</Button>
         </nav>
         <header className="header">
           <Image src={header} alt="header" />
@@ -121,37 +75,25 @@ async  componentDidMount () {
           
           <div className="displayItemsWr">
             
-            {/*items.map(item => <Item firstChild="movieImage" secondChild="movieDescription" button="Favorite" imgSrc={item.image} />)*/}
-          {/* { items.map(el => console.log(el)) } */}
          
           {
 
-            items.map(el => ( //deka skliaustelio galima i kita eilute perkelt
+            movies.map(el => ( 
               <Item 
                 firstChild="movieImage" 
                 secondChild="movieDescription" 
-                button={this.state.favorites.includes(el.id) ? "Remove" : "Favorite"} 
+                //button={favorites.includes(el.id) ? "Remove" : "Favorite"} 
                 imgSrc={el.image} 
                 title={el.title} 
                 description={el.description} 
-                onclick={() => this.changeButton(el.id)}
+                // onclick={() => changeButton(el.id)}
                 id={el.id}
-                isFavorite={this.state.favorites.includes(el.id)}
+                //isFavorite={favorites.includes(el.id)}
               /> 
               ))
 
-          }
-          
-          
-
-
-            
-
-          
+          }    
           </div>
-
-        
-
         </section>
         <footer className="footer">
 
@@ -162,8 +104,30 @@ async  componentDidMount () {
         </footer>
       </div>
     )
+
+}
+
+// function mapStateToProps({ favorites }) {
+//   //console.log(favorites);
+//   return {
+//     favorites: favorites,
+//   };
+// }
+
+// export default connect(mapStateToProps)(App);
+//export default App;
+
+function mapStateToProps({ movies }) {
+  console.log(movies);
+  return {
+    movies: movies,
   };
 }
 
-//export default App;
-export default withRouter(App);
+function mapDispatchToProps(dispatch) {
+  return {
+      setMovies: movies => dispatch({ type: content.types.SHOW_MOVIES_CONST, movies }) //sitai yra tai, kad keliauja i content/index.js action
+  }
+}
+ 
+export default connect(mapStateToProps, mapDispatchToProps)(App);

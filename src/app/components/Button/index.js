@@ -1,15 +1,12 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { Link, useHistory, useLocation, withRouter } from "react-router-dom";
 
-function Button ({children, onclick, id, mode}) {
+function Button ({children, onclick, id, favorites, toggleFavorite}) {
 
-    //  const changeButton = event => {
-    //     //console.log(event.target.value);
-    //     console.log("veikia");
-    // }
-    let modeClass = mode === "outline" ? "btn-outline btn" : "btn"; 
     return (
 
-            <button className={modeClass} id={id} onClick={onclick}>{children}</button>
+            <button className="btn" onClick={ onclick }>{children}</button>
 
     );
 }

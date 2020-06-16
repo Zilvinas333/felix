@@ -5,8 +5,8 @@ import Private from './private.js';
 
 function PrivateRoute (props) {
     const token = window.localStorage.getItem('token');
-    console.log("SITAS: ", token);
-    console.log(props);
+    //console.log("SITAS: ", token);
+    //console.log(props);
     if (token) {
         return <Route {...props} /> //perduoda visus atributus is index.js
     }
