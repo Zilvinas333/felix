@@ -45,7 +45,6 @@ function App() {
           </Route> */}
             <PrivateRoute exact path="/private">
                 <Private /> 
-              
             </PrivateRoute> 
             <PrivateRoute exact path="/item/:id">
               <SingleMovie /> 

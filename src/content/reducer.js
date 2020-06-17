@@ -2,10 +2,23 @@ import * as types from "./types";
 
 const DEFAULT_CONTENT_STATE = {
     favorites: [],
-    movies: [],
+    //movies: [],
+    movies: {
+      loading: false,
+      data: [],
+      error: null
+    },
     token: localStorage.getItem("token"), //cia ideja yra tame, kad jeigu vartotojas uzdare browseri ir i ji grizo, tokenas
     //vis tiek issisaugos, nes kas liecia SET_TOKEN, tai jis setinasi tik su loginu
-    movie: []
+    login: {
+      loading: false,
+      error: null,
+    },
+    movie: [],
+    login: {
+      loading: false,
+      error: null,
+    },
   };
   
   function contentReducer(state = DEFAULT_CONTENT_STATE, action) {
@@ -37,6 +50,39 @@ const DEFAULT_CONTENT_STATE = {
         //ir jie turi visi isirasineti, o tame, kad jeigu pvz linka nusiusiu draugeliui tai jis nueis tiesiai per linka
         //ir kad tas vienas filmas jam ir isirasyti. todel cia ir irasom tik viena ta filma.
       }
+
+      case types.MOVIES_REQ: //aukstesni movies tipai neveiks su redux-api-middleware, pastarajam reikalinga kitokia 
+      //sintakse, kaip kad cia, nurodant visus payload, turis yra sitos bibliotekos objektas ir pan.
+        return { ...state, movies: { ...state.movies, loading: true } };
+      case types.MOVIES_FAILURE:
+        return {
+          ...state,
+          movies: {
+            ...state.movies,
+            loading: false,
+            data: action.payload,
+            error: action.error,
+          },
+        };
+      case types.MOVIES_SUCESS:
+        return { ...state, movies: { ...state.movies, loading: false, data: action.payload } };
+
+
+
+      case types.LOGIN_REQ:
+        return { ...state, login: { ...state.login, loading: true } };
+      case types.LOGIN_FAILURE:
+        return {
+          ...state,
+          login: {
+            ...state.login,
+            loading: false,
+            error: action.payload,
+          },
+        };
+      case types.LOGIN_SUCESS:
+        return { ...state, token: action.payload.token, login: { ...state.login, loading: false } }; 
+        //payload cia defaultinis objektas is redux-api-middleware, per kuri persiduoda duomenys
 
       default:
         return state;

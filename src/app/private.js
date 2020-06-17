@@ -2,6 +2,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Link, useHistory, useLocation, withRouter } from "react-router-dom";
 import { connect } from 'react-redux';
+import { compose, bindActionCreators } from "redux";
 //import logo from './logo.svg';
 //import './App.css';
 import './index.scss';
@@ -12,27 +13,28 @@ import FavoriteButton from './components/FavoriteButton';
 import Button from './components/Button';
 import Item from './components/Item';
 
+import content from "../content";
 
-const Private = ({ movies, setMovies, setToken, token  }) => {
-
+const Private = ({ movies, setMovies, setToken, token, getMovies  }) => {
+console.log("cia?");
   //let [movies, setMovies] = useState([]);
   //let [favorites, setFavorites] = useState([]);
   let history = useHistory();
 
-  const getMovies = useCallback( 
-    async () => {
+  // const getMovies = useCallback( 
+  //   async () => {
 
-    const response = await fetch(`https://academy-video-api.herokuapp.com/content/items`, {
-      method: "GET",
-      headers: { authorization: localStorage.getItem("token") }
-    })
-    if (response.ok) {
-      setMovies(await response.json())
-    }
+  //   const response = await fetch(`https://academy-video-api.herokuapp.com/content/items`, {
+  //     method: "GET",
+  //     headers: { authorization: localStorage.getItem("token") }
+  //   })
+  //   if (response.ok) {
+  //     setMovies(await response.json())
+  //   }
 
-    },
-    [setMovies]
-  );
+  //   },
+  //   [setMovies]
+  // );
     
 
 
@@ -75,7 +77,7 @@ const Private = ({ movies, setMovies, setToken, token  }) => {
         console.log(e);
     }
   }
-
+console.log("veikia?");
     return (
 
       <div className="App">
@@ -122,19 +124,47 @@ const Private = ({ movies, setMovies, setToken, token  }) => {
 
 //export default Private;
 
-function mapStateToProps({ movies }) {
-  console.log(movies);
-  return {
-    movies: movies,
-    token: "",
-  };
-}
+const enhance = compose(
+  withRouter,
+  connect(
+    (state) => {
+      return {
+        movies: content.selectors.moviesFromSelectors(state),
+      };
+    },
+    (dispatch) => {
+      return {
+        getMovies: bindActionCreators(content.actions.getMovies, dispatch),
+      };
+    }
+  )
+);
 
-function mapDispatchToProps(dispatch) {
-  return {
-      setMovies: movies => dispatch({ type: "SHOW_MOVIES", movies }), //sitai yra tai, kas keliauja i content/index.js action
-      setToken: token => dispatch({ type: "SET_TOKEN", token })
-  }
-}
+// const enhance = connect(
+//   // (state) => ({
+//   //   error: content.selectors.getMoviesError(state),
+//   // }),
+//   null,
+//   (dispatch) => ({
+//     getMovies: bindActionCreators(content.actions.getMovies, dispatch),
+//   })
+// );
+
+export default enhance(Private);
+
+// function mapStateToProps({ movies }) {
+//   console.log(movies);
+//   return {
+//     movies: movies,
+//     token: "",
+//   };
+// }
+
+// function mapDispatchToProps(dispatch) {
+//   return {
+//       setMovies: movies => dispatch({ type: "SHOW_MOVIES", movies }), //sitai yra tai, kas keliauja i content/index.js action
+//       setToken: token => dispatch({ type: "SET_TOKEN", token })
+//   }
+// }
  
-export default connect(mapStateToProps, mapDispatchToProps)(Private);
+// export default connect(mapStateToProps, mapDispatchToProps)(Private);

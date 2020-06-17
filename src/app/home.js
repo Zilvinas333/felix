@@ -2,6 +2,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Link, useHistory, useLocation, withRouter } from "react-router-dom";
 import { connect } from 'react-redux';
+import { compose, bindActionCreators } from "redux";
 
 //import logo from './logo.svg';
 //import './App.css';
@@ -15,21 +16,21 @@ import Item from './components/Item';
 import content from "../content";
  
 
-const App = ( { favorites, movies, setMovies } ) => {
+const App = ( { favorites, movies, setMovies, getMovies } ) => {
   //let [movies, setMovies] = useState([]);
   //let [favorites, setFavorites] = useState([]);
 
-  const getMovies = useCallback( 
-    async () => {
+  // const getMovies = useCallback( 
+  //   async () => {
 
-    const response = await fetch(`https://academy-video-api.herokuapp.com/content/free-items`)
-    if (response.ok) {
-      setMovies(await response.json())
-    }
+  //   const response = await fetch(`https://academy-video-api.herokuapp.com/content/free-items`)
+  //   if (response.ok) {
+  //     setMovies(await response.json())
+  //   }
 
-    },
-    [setMovies]
-  );
+  //   },
+  //   [setMovies]
+  // );
     
   let history = useHistory();
 
@@ -41,7 +42,7 @@ const App = ( { favorites, movies, setMovies } ) => {
     getMovies()
   },[getMovies])
 
-
+  console.log(movies);
   // const changeButton = id => {
   //   console.log(id);
   //   if (favorites.includes(id)) {
@@ -117,17 +118,45 @@ const App = ( { favorites, movies, setMovies } ) => {
 // export default connect(mapStateToProps)(App);
 //export default App;
 
-function mapStateToProps({ movies }) {
-  console.log(movies);
-  return {
-    movies: movies,
-  };
-}
+// const enhance = connect(
+//   // (state) => ({
+//   //   error: content.selectors.getMoviesError(state),
+//   // }),
+//   null,
+//   (dispatch) => ({
+//     getMovies: bindActionCreators(content.actions.getMovies, dispatch),
+//   })
+// );
 
-function mapDispatchToProps(dispatch) {
-  return {
-      setMovies: movies => dispatch({ type: content.types.SHOW_MOVIES_CONST, movies }) //sitai yra tai, kad keliauja i content/index.js action
-  }
-}
+const enhance = compose(
+  withRouter,
+  connect(
+    (state) => {
+      return {
+        movies: content.selectors.moviesFromSelectors(state),
+      };
+    },
+    (dispatch) => {
+      return {
+        getMovies: bindActionCreators(content.actions.getMovies, dispatch),
+      };
+    }
+  )
+);
+
+export default enhance(App);
+
+// function mapStateToProps({ movies }) {
+//   console.log(movies);
+//   return {
+//     movies: movies,
+//   };
+// }
+
+// function mapDispatchToProps(dispatch) {
+//   return {
+//       setMovies: movies => dispatch({ type: content.types.SHOW_MOVIES_CONST, movies }) //sitai yra tai, kad keliauja i content/index.js action
+//   }
+// }
  
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+// export default connect(mapStateToProps, mapDispatchToProps)(App);
