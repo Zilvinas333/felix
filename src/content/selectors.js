@@ -6,6 +6,6 @@ export const tokenFromSelectors = (state) => {
 };
 
 export const moviesFromSelectors = (state) => {
-    console.log("sitas selectorius", state);
+   // console.log("sitas selectorius", state);
     return state.content.movies.data;
 }

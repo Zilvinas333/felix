@@ -14,7 +14,7 @@ function PrivateRoute ( { isAuthenticated, ...props } ) { //pasirodo, jeigu sali
     //console.log(props);
     
     if (isAuthenticated) {
-      console.log("private route?", isAuthenticated);
+      //console.log("private route?", isAuthenticated);
         return <Route {...props} /> //perduoda visus atributus is index.js
     }
     return <Redirect to="/login" />;

@@ -52,33 +52,47 @@ export const login = (username, password) =>
 //     }
 //   }
 
+//redux-api-middleware
+export const getMovies = (token) =>
+  createAction({
+    endpoint:  `https://academy-video-api.herokuapp.com/content/${token ? "" : "free-"}items`,
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      authorization: token
+    },
+    types: [types.MOVIES_REQ, types.MOVIES_SUCESS, types.MOVIES_FAILURE], //visada turi buti butinai tokia seka
+  });
 
 //getMovies aprasytas su thunku, kuris kaip middlewaras nurodomas state/index.js. 
-export const getMovies = ({ free } = {}) => {
-    return async (dispatch) => {
-      dispatch({ type: types.MOVIES_REQ });
+// export const getMovies = ({ free } = {}) => {
+//     console.log(free);
+//     //console.log(props);
+//     return async (dispatch) => {
+//       dispatch({ type: types.MOVIES_REQ });
   
-      const response = await fetch(
-        `https://academy-video-api.herokuapp.com/content/${free ? "free-" : ""}items`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            //authorization: selectors.tokenFromSelectors(store.getState())
-          },
-        }
-      );
-      if (!response.ok) {
-        dispatch({
-          type: types.MOVIES_FAILURE,
-          payload: await response.json(),
-          error: "Oops, only free content",
-        });
-      } else {
-        dispatch({ type: types.MOVIES_SUCESS, payload: await response.json() });
-      }
-    };
-  };
+//       const response = await fetch(
+//         `https://academy-video-api.herokuapp.com/content/${free ? "free-" : ""}items`,
+//         {
+//           method: "GET",
+//           headers: {
+//             "Content-Type": "application/json",
+//             //authorization: selectors.tokenFromSelectors(store.getState())
+//             //authorization: token
+//           },
+//         }
+//       );
+//       if (!response.ok) {
+//         dispatch({
+//           type: types.MOVIES_FAILURE,
+//           payload: await response.json(),
+//           error: "Oops, only free content",
+//         });
+//       } else {
+//         dispatch({ type: types.MOVIES_SUCESS, payload: await response.json() });
+//       }
+//     };
+//   };
 
 // const getMovies = useCallback( 
   //   async () => {

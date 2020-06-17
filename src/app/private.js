@@ -16,7 +16,6 @@ import Item from './components/Item';
 import content from "../content";
 
 const Private = ({ movies, setMovies, setToken, token, getMovies  }) => {
-console.log("cia?");
   //let [movies, setMovies] = useState([]);
   //let [favorites, setFavorites] = useState([]);
   let history = useHistory();
@@ -36,10 +35,10 @@ console.log("cia?");
   //   [setMovies]
   // );
     
-
+  console.log("private", token);
 
   useEffect(() => {
-    getMovies()
+    getMovies(token)
   },[getMovies])
 
 
@@ -77,7 +76,7 @@ console.log("cia?");
         console.log(e);
     }
   }
-console.log("veikia?");
+
     return (
 
       <div className="App">
@@ -130,6 +129,7 @@ const enhance = compose(
     (state) => {
       return {
         movies: content.selectors.moviesFromSelectors(state),
+        token: content.selectors.tokenFromSelectors(state),
       };
     },
     (dispatch) => {

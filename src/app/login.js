@@ -62,12 +62,12 @@ const Login = ({ setToken, token, login, isAuthenticated }) => {
   //     console.log(event.target.value);
   // } 
 
-console.log(token);
+
   useEffect(() => {
     if (isAuthenticated) {
       history.replace("/private");
     } else {
-      console.log("nesuveike redirectas", isAuthenticated);
+      //console.log("nesuveike redirectas", isAuthenticated);
     }
   }, [usernameInput, history, isAuthenticated, token]);
 
