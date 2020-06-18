@@ -65,6 +65,7 @@ const Login = ({ setToken, token, login, isAuthenticated }) => {
 
   useEffect(() => {
     if (isAuthenticated) {
+      localStorage.setItem("token", token);
       history.replace("/private");
     } else {
       //console.log("nesuveike redirectas", isAuthenticated);

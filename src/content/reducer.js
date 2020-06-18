@@ -14,8 +14,13 @@ const DEFAULT_CONTENT_STATE = {
       loading: false,
       error: null,
     },
-    movie: [],
-    login: {
+    //movie: [],
+    singleMovie: {
+      loading: false,
+      data: [],
+      error: null
+    },
+    logout: {
       loading: false,
       error: null,
     },
@@ -66,8 +71,25 @@ const DEFAULT_CONTENT_STATE = {
         };
       case types.MOVIES_SUCESS:
         return { ...state, movies: { ...state.movies, loading: false, data: action.payload } };
+      //cia jeigu ka, pabandyti pasiloginti movies, galbut filmai datoje randasi. reduxo devtoolsuose arba consoleje.
 
 
+      case types.SINGLE_MOVIE_REQ: //aukstesni movies tipai neveiks su redux-api-middleware, pastarajam reikalinga kitokia 
+      //sintakse, kaip kad cia, nurodant visus payload, turis yra sitos bibliotekos objektas ir pan.
+        return { ...state, singleMovie: { ...state.singleMovie, loading: true } };
+      case types.SINGLE_MOVIE_FAILURE:
+        return {
+          ...state,
+          singleMovie: {
+            ...state.singleMovie,
+            loading: false,
+            data: action.payload,
+            error: action.error,
+          },
+        };
+      case types.SINGLE_MOVIE_SUCESS:
+        return { ...state, singleMovie: { ...state.singleMovie, loading: false, data: action.payload } };
+      //cia jeigu ka, pabandyti pasiloginti movies, galbut filmai datoje randasi. reduxo devtoolsuose arba consoleje.
 
       case types.LOGIN_REQ:
         return { ...state, login: { ...state.login, loading: true } };
@@ -84,6 +106,20 @@ const DEFAULT_CONTENT_STATE = {
         return { ...state, token: action.payload.token, login: { ...state.login, loading: false } }; 
         //payload cia defaultinis objektas is redux-api-middleware, per kuri persiduoda duomenys
 
+      case types.LOGOUT_REQ:
+        return { ...state, logout: { ...state.logout, loading: true } };
+      case types.LOGOUT_FAILURE:
+        return {
+          ...state,
+          logout: {
+            ...state.logout,
+            loading: false,
+            error: action.payload,
+          },
+        };
+      case types.LOGOUT_SUCESS:
+        return { ...state, token: null, logout: { ...state.logout, loading: false } }; 
+      
       default:
         return state;
     }

@@ -9,3 +9,13 @@ export const moviesFromSelectors = (state) => {
    // console.log("sitas selectorius", state);
     return state.content.movies.data;
 }
+
+export const singleMovieFromSelectors = (state) => {
+    // console.log("sitas selectorius", state);
+     return state.content.singleMovie.data;
+ }
+
+export const tokenState = (state) => {
+    console.log("222222222222", state.content.state);
+    return state.content.token;
+}

@@ -14,8 +14,9 @@ import Button from './components/Button';
 import Item from './components/Item';
 
 import content from "../content";
+import { isTokenNull } from '../content/selectors';
 
-const Private = ({ movies, setMovies, setToken, token, getMovies  }) => {
+const Private = ({ movies, setMovies, setToken, token, getMovies, isTokenFalse, signOut  }) => {
   //let [movies, setMovies] = useState([]);
   //let [favorites, setFavorites] = useState([]);
   let history = useHistory();
@@ -56,26 +57,50 @@ const Private = ({ movies, setMovies, setToken, token, getMovies  }) => {
   //   }
   // }  
 
-  const logout = async () => {
-    try {
+    const logout = () => signOut(token);
+  // const logout = async () => {
+  //   try {
+  //     signOut(token);
+  //   } catch (e) {
+  //     console.log(e);
+  //   }
+  //   localStorage.removeItem("token");
+  //   history.replace("/");
+    
+  // }
+
+  useEffect(() => {
+    if (isTokenFalse === false) {
+      localStorage.removeItem("token"); //cia defaultinis elgesys - tik istryne ir permeta by default i login. todel pamegint replace virs sitos eilutes iskelt?
+      history.replace("/");
+      //console.log("fiksuoja false");
+    } else {
+      //console.log("nesuveike redirectas", isAuthenticated);
+      console.log("nefiksuoja false");
+    }    
+  }, [history, isTokenFalse, token]);
   
-        let logout = await fetch(`https://academy-video-api.herokuapp.com/auth/logout`, {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ token: localStorage.getItem("token") })
+  
+  // const logout = async () => {
+  //   try {
+  
+  //       let logout = await fetch(`https://academy-video-api.herokuapp.com/auth/logout`, {
+  //           method: "POST",
+  //           headers: {
+  //               'Content-Type': 'application/json',
+  //           },
+  //           body: JSON.stringify({ token: localStorage.getItem("token") })
             
-        })
-        console.log(logout);
-        //logout = await logout.json();
-        localStorage.removeItem('token');
-        setToken(token);
-        history.replace('/');
-    } catch (e) {
-        console.log(e);
-    }
-  }
+  //       })
+  //       console.log(logout);
+  //       //logout = await logout.json();
+  //       localStorage.removeItem('token');
+  //       setToken(token);
+  //       history.replace('/');
+  //   } catch (e) {
+  //       console.log(e);
+  //   }
+  // }
 
     return (
 
@@ -130,11 +155,13 @@ const enhance = compose(
       return {
         movies: content.selectors.moviesFromSelectors(state),
         token: content.selectors.tokenFromSelectors(state),
+        isTokenFalse: !!content.selectors.tokenFromSelectors(state),
       };
     },
     (dispatch) => {
       return {
         getMovies: bindActionCreators(content.actions.getMovies, dispatch),
+        signOut: bindActionCreators(content.actions.signOut, dispatch),
       };
     }
   )

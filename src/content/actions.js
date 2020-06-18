@@ -108,3 +108,48 @@ export const getMovies = (token) =>
   //   },
   //   [setMovies]
   // );
+
+
+  export const getMovie = (token, id) =>
+    createAction({
+      endpoint:  `https://academy-video-api.herokuapp.com/content/items/${id}`,
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: token
+      },
+      types: [types.SINGLE_MOVIE_REQ, types.SINGLE_MOVIE_SUCESS, types.SINGLE_MOVIE_FAILURE],
+    });
+
+    export const signOut = (token) =>
+    createAction({
+      endpoint:  `https://academy-video-api.herokuapp.com/auth/logout`,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ token: token }),
+      types: [types.LOGOUT_REQ, types.LOGOUT_SUCESS, types.LOGOUT_FAILURE],
+    });
+
+
+    // const logout = async () => {
+    //   try {
+    
+    //       let logout = await fetch(`https://academy-video-api.herokuapp.com/auth/logout`, {
+    //           method: "POST",
+    //           headers: {
+    //               'Content-Type': 'application/json',
+    //           },
+    //           body: JSON.stringify({ token: localStorage.getItem("token") })
+              
+    //       })
+    //       console.log(logout);
+    //       //logout = await logout.json();
+    //       localStorage.removeItem('token');
+    //       setToken(token);
+    //       history.replace('/');
+    //   } catch (e) {
+    //       console.log(e);
+    //   }
+    // }
